@@ -42,7 +42,8 @@ Blockchain.prototype =
             previousBlock =
             {
                 id: 0,
-                hash: this.firstBlockPreviousHash
+                hash: this.firstBlockPreviousHash,
+                isSigned: function() {return true;}
             }; // TODO make a fake block with checks
         }
         block.attachTo(this, previousBlock);
@@ -50,6 +51,15 @@ Blockchain.prototype =
         this.blocks.push(block);
 
         return this;
+    },
+    getBlock: function(blockId)
+    {
+        var length = this.blocks.length;
+        if (0 <= blockId && blockId < length)
+        {
+            return this.blocks[blockId];
+        }
+        throw Error(blockId + ' is not a valid block ID');
     },
     isWorkValid: function(work)
     {
@@ -61,7 +71,7 @@ Blockchain.prototype =
         for (var i = 0, length = this.blocks.length; i < length; ++i)
         {
             block = this.blocks[i];
-            if (block.isValid())
+            if (block.isSigned())
             {
                 continue;
             }
@@ -71,8 +81,7 @@ Blockchain.prototype =
     },
     work: function(data, nonce)
     {
-        return this.hashFunction(data + nonce).toLocaleString();
-        // return this.hashFunction(data + nonce).toString();
+        return this.hashFunction(data + nonce).toString();
     }
 };
 
@@ -94,7 +103,7 @@ function Block(/*previousBlock, */data)
     this.id = null;
     this.previousBlock = null;
     this.timestamp = Date.now();
-    this.content = data || "";
+    this.content = data || '';
     this.nonce = null; //0;
     this.hash = null;
     this.chain = null;
@@ -140,6 +149,11 @@ Block.prototype =
             throw new Error("Block need to be attached to a blockchain first");
         }
 
+        if (!this.previousBlock.isSigned())
+        {
+            throw new Error("Previous block is not signed, mining it is required");
+        }
+
         var workInput1 = this.getWorkInput1();
         var work = null;
         for (this.nonce = 0; this.nonce < Block.MAX_MINING_ATTEMPT; ++this.nonce)
@@ -183,7 +197,7 @@ Block.prototype =
         this.content = data;
     },
     */
-    isValid: function()
+    isSigned: function()
     {
         var work = this.chain.work(this.getWorkInput1(), this.nonce);
         return this.chain.isWorkValid(work);
