@@ -24,6 +24,13 @@ function Blockchain()
     // '0000000000000000000000000000000000000000000000000000000000000000';
     console.log("firstBlockPreviousHash: " + this.firstBlockPreviousHash);
 
+    this.blockZero =
+    {
+        id: 0,
+        hash: this.firstBlockPreviousHash,
+        isSigned: function() {return true;}
+    }; // TODO make a fake block with checks
+
     //this.maxMiningAttempt = 1000000;
 }
 
@@ -39,12 +46,7 @@ Blockchain.prototype =
         }
         else
         {
-            previousBlock =
-            {
-                id: 0,
-                hash: this.firstBlockPreviousHash,
-                isSigned: function() {return true;}
-            }; // TODO make a fake block with checks
+            previousBlock = this.blockZero;
         }
         block.attachTo(this, previousBlock);
 
@@ -87,21 +89,9 @@ Blockchain.prototype =
 
 function Block(/*previousBlock, */data)
 {
-    /*
-    if (previousBlock && previousBlock instanceof Block)
-    {
-        this.id = previousBlock.id + 1;
-        this.previousBlock = previousBlock;
-    }
-    else
-    {
-        this.id = 1;
-        this.previousBlock = {hash: Block.FIRST_BLOCK_PREVIOUS_HASH};
-    }
-    */
-
     this.id = null;
     this.previousBlock = null;
+    //this.previousHash = null;
     this.timestamp = Date.now();
     this.content = data || '';
     this.nonce = null; //0;
@@ -157,6 +147,8 @@ Block.prototype =
         var workInput1 = this.getWorkInput1();
         var work = null;
         for (this.nonce = 0; this.nonce < Block.MAX_MINING_ATTEMPT; ++this.nonce)
+        // this.nonce = (this.nonce === null) ? 0 : this.nonce;
+        // for (; this.nonce < Block.MAX_MINING_ATTEMPT; ++this.nonce)
         {
             work = this.chain.work(workInput1, this.nonce);
             // TODO send event to the UI
@@ -174,20 +166,57 @@ Block.prototype =
     },
     getWorkInput1: function()
     {
-        // return String(this.id) + this.previousBlock.hash + String(this.timestamp) + this.content;
-        return String(this.id) + this.previousBlock.hash + this.content;
+        // return this.previousBlock.hash + String(this.id) + String(this.timestamp) + this.content;
+        return this.previousBlock.hash + String(this.id) + this.content;
     },
-    // get previousHash() // TODO test
-    getPreviousHash: function()
+    /*
+    getPreviousBlockHash: function()
     {
         return this.previousBlock.hash;
     },
+    */
     setPreviousBlock: function(block)
     {
         this.previousBlock = block;
         return this;
     },
-    /*
+    setContent: function(content)
+    {
+        this.content = content;
+        return this;
+    },
+    setNonce: function(nonce)
+    {
+        if (typeof nonce === 'string')
+        {
+            this.nonce = parseInt(nonce, 10);
+        }
+        else if (typeof nonce === 'number')
+        {
+            this.nonce = nonce;
+        }
+        else
+        {
+            throw new Error("Nonce must be a parsable String or a Number");
+        }
+        return this;
+    },
+    setHash: function(hash)
+    {
+        this.hash = hash;
+        return this;
+    },
+    isSigned: function()
+    {
+        var work = this.chain.work(this.getWorkInput1(), this.nonce);
+        // console.log('work: ' + work);
+        // console.log('hash: ' + this.hash);
+        return (work === this.hash && this.chain.isWorkValid(work));
+    }/*,
+    get content()
+    {
+        return this.content;
+    },
     get hash()
     {
         return this.hash;
@@ -195,17 +224,8 @@ Block.prototype =
     set content(data)
     {
         this.content = data;
-    },
+    }
     */
-    isSigned: function()
-    {
-        var work = this.chain.work(this.getWorkInput1(), this.nonce);
-        return this.chain.isWorkValid(work);
-    }/*,
-    get content()
-    {
-        return this.content;
-    }*/
 };
 
 

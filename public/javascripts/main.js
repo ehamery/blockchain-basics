@@ -27,8 +27,10 @@ $(function()
     var $blockForm1 = new BlockForm(block1);
     var $blockForm2 = new BlockForm(block2);
     // $blockForm1.appendTo('#main');
-    $blockchainDiv.prepend($blockForm1);
-    $blockchainDiv.prepend($blockForm2);
+    $blockchainDiv.append($blockForm1);
+    $blockchainDiv.append($blockForm2);
+    // $blockchainDiv.prepend($blockForm1);
+    // $blockchainDiv.prepend($blockForm2);
 
     //TODO could use $mainDiv.after($blockForm1)
 });

@@ -10,18 +10,51 @@ function BlockForm(block)
 
     //block#, timestamp, data, nonce, previous hash, hash
     // TODO +++ add name
-    var $blockNbGroup = new InputGroup('number', 'id-' + block.id, 'ID', block.id);
+    var $blockNbGroup = new InputGroup('number', block.id, 'ID', block.id);
     // var $timestampGroup = new InputGroup('number', 'timestamp-' + block.id, 'Timestamp', block.timestamp);//TODO Type
     var $contentGroup = new TextAreaGroup('content-'+ block.id, 'Content', block.content);
-    var $previousHashGroup = new InputGroup('text', 'previous-hash-' + block.id, 'Previous Hash', block.getPreviousHash());
+    var $previousHashGroup = new InputGroup('text', 'previous-block-hash-' + block.id, 'Previous Blcok', block.previousBlock.hash);
     var $nonceGroup = new InputGroup('number', 'nonce-' + block.id, 'Nonce', block.nonce);
     var $hashGroup = new InputGroup('text', 'hash-' + block.id, 'Hash', block.hash);
     var $mineButton = new MineButton(block);
 
+    $blockNbGroup.find('input').prop('disabled', true);
+    // $previousHashGroup.find('input').prop('disabled', true);
+    // $nonceGroup.find('input').prop('disabled', true);
+    // $hashGroup.find('input').prop('disabled', true);
+
+    $contentGroup.find('textarea').on('input', function(event)
+    {
+        console.log($(this).val());
+        block.setContent($(this).val());
+        setBlockFormStatus(block);
+    });
+
+    $previousHashGroup.find('input').on('input', function(event)
+    {
+        console.log($(this).val());
+        block.setPreviousBlockHash($(this).val());
+        setBlockFormStatus(block);
+    });
+
+    $nonceGroup.find('input').on('input', function(event)
+    {
+        console.log($(this).val());
+        block.setNonce($(this).val());
+        setBlockFormStatus(block);
+    });
+
+    $hashGroup.find('input').on('input', function(event)
+    {
+        console.log($(this).val());
+        block.setHash($(this).val());
+        setBlockFormStatus(block);
+    });
+
+    $fieldset.append($previousHashGroup);
     $fieldset.append($blockNbGroup);
     // $fieldset.append($timestampGroup);
     $fieldset.append($contentGroup);
-    $fieldset.append($previousHashGroup);
     $fieldset.append($nonceGroup);
     $fieldset.append($hashGroup);
     $fieldset.append($mineButton);
@@ -31,11 +64,12 @@ function BlockForm(block)
     return $form;
 }
 
-function InputGroup(type, inputId, label, value)
+function InputGroup(type, inputId, label, value, name)
 {
+    // name = name || label;
     var $inputGroup = $('<div/>', {class: 'form-group'});
     var $label = new Label(inputId, label);
-    var $input = new Input(type, inputId, value);
+    var $input = new Input(type, inputId, value/*, name*/);
     $inputGroup.append($label);
     $inputGroup.append($input);
     return $inputGroup;
@@ -69,13 +103,14 @@ function Label(inputId, text)
     return $label;
 }
 
-function Input(type, id, value)
+function Input(type, id, value, name)
 {
     var $div = $('<div/>', {class: InputGroup.INPUT_GRID_CLASS});
     var $input = $('<input/>',
     {
         class: 'form-control',
         id: id,
+        name: name,
         type: type,
         value: value
     });
@@ -99,16 +134,6 @@ function TextArea(id, text, rows)
     return $div;
 }
 
-function InputGroup(type, inputId, label, value)
-{
-    var $inputGroup = $('<div/>', {class: 'form-group'});
-    var $label = new Label(inputId, label);
-    var $input = new Input(type, inputId, value);
-    $inputGroup.append($label);
-    $inputGroup.append($input);
-    return $inputGroup;
-}
-
 function MineButton(block)
 {
     var $inputGroup = $('<div/>', {class: 'form-group'});
@@ -124,6 +149,46 @@ function MineButton(block)
         // 'aria-pressed': true,
         autocomplete: 'off',
         class: 'btn btn-primary',
+        click: function(event)
+        {
+            // Locking form until mining is over
+            disable(block);
+
+            // console.log(event);
+            // event.preventDefault();
+            console.log("Triggering mining");
+            // $(this).button('toogle');
+            // $(this).button('reset');
+            $(this).button('mining');
+
+            var $this = $(this);
+            setTimeout(function() // required to allow button('mining') to execute first
+            {
+                // $this.button('test');
+                try
+                {
+                    block.mine();
+                }
+                catch(error)
+                {
+                    alert(error); // TODO display something nicer
+                    $this.button('reset');
+                    disable(block, false);
+                    throw(error);
+                }
+
+                // $this.button('signed');
+                // updateBlockForm(block);
+                setBlockFormOnceAndHash(block)
+                setBlockFormAsSigned(block);
+                $this.button('reset');
+                disable(block, false);
+
+            }, 1000); // 1 seconds to have the time the realised it is mining
+
+            //$( "p" ).trigger( "myCustomEvent", [ "John" ] );
+            // return false;
+        },
         // class: 'btn btn-primary active',
         'data-signed-text': 'Signed',
         'data-mining-text': 'Mining...',
@@ -132,44 +197,12 @@ function MineButton(block)
 
         // 'data-toggle': 'button',
         'autocomplete': "off",
-        id: 'block-' + block.id,
+        id: 'mine-button-' + block.id,
         on:
         {
             mine: function()
             {
                 console.log('mining...');
-            },
-            click: function(event)
-            {
-                // console.log(event);
-                // event.preventDefault();
-                console.log("Tiggering mining");
-                // $(this).button('toogle');
-                // $(this).button('reset');
-                $(this).button('mining');
-                var $this = $(this);
-
-                // required to allow button('mining') to execute first
-                setTimeout(function()
-                {
-                    // $this.button('test');
-                    try
-                    {
-                        block.mine();
-                        // TODO change well background color
-                        //$this.button('signed');
-                        $this.button('reset');
-                    }
-                    catch(error)
-                    {
-                        alert(error);
-                        $this.button('reset');
-                        throw(error);
-                    }
-                }, 1000); // 1 seconds to have the time the realised it is mining
-
-                //$( "p" ).trigger( "myCustomEvent", [ "John" ] );
-                // return false;
             }
         },
         text: 'Mine',
@@ -180,3 +213,79 @@ function MineButton(block)
     return $inputGroup;
 }
 
+
+
+
+function getBlockForm(block)
+{
+    return $('#block-' + block.id);
+}
+
+function disable(block, lock)
+{
+    lock = (lock == undefined) ? true : lock;
+    var $blockForm = getBlockForm(block);
+    $blockForm.find('fieldset').prop('disabled', lock);
+}
+
+function setBlockFormOnceAndHash(block)
+{
+    var $blockForm = getBlockForm(block);
+    // Set previous block's hash
+    $blockForm.find('#previous-block-hash-' + block.id).val(block.previousBlock.hash);
+    // Set nonce
+    $blockForm.find('#nonce-' + block.id).val(block.nonce);
+    // Set hash
+    $blockForm.find('#hash-' + block.id).val(block.hash);
+}
+
+function setBlockFormAsSigned(block)
+{
+    var $blockForm = getBlockForm(block);
+    // Set signed color (green)
+    $blockForm.find('.well').removeClass('tempered').addClass('signed');
+    // // Set nonce
+    // $blockForm.find('#nonce-' + block.id).val(block.nonce);
+    // // Set hash
+    // $blockForm.find('#hash-' + block.id).val(block.hash);
+}
+
+function setBlockFormAsTempered(block)
+{
+    $('#block-' + block.id + ' .well').removeClass('signed').addClass('tempered');
+}
+
+
+function setBlockFormStatus(block)
+{
+    if (block.isSigned())
+    {
+        setBlockFormAsSigned(block);
+    }
+    else
+    {
+        setBlockFormAsTempered(block);
+    }
+}
+
+/*
+function getBlockFormId(block)
+{
+    return 'block-' + block.id;
+}
+
+function getBlockFormSelector(block)
+{
+    return '#' + block-' + block.id;
+}
+
+function getBlockForm(block)
+{
+    return $(getBlockFormSelector(block));
+}
+
+function updateBlockFormField(block)
+{
+    var $blockFrom = $('#block-' + block.id);
+}
+*/
