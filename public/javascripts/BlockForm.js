@@ -33,8 +33,15 @@ function BlockForm(block)
     $previousHashGroup.find('input').on('input', function(event)
     {
         console.log($(this).val());
-        block.setPreviousBlockHash($(this).val());
-        setBlockFormStatus(block);
+        //block.setPreviousBlockHash($(this).val());
+        if (block.previousBlock.hash !== $(this).val())
+        {
+            setBlockFormAsTempered(block);
+        }
+        else
+        {
+            setBlockFormStatus(block);
+        }
     });
 
     $nonceGroup.find('input').on('input', function(event)
@@ -179,7 +186,7 @@ function MineButton(block)
 
                 // $this.button('signed');
                 // updateBlockForm(block);
-                setBlockFormOnceAndHash(block)
+                setBlockFormOnceAndHashes(block)
                 setBlockFormAsSigned(block);
                 $this.button('reset');
                 disable(block, false);
@@ -228,7 +235,7 @@ function disable(block, lock)
     $blockForm.find('fieldset').prop('disabled', lock);
 }
 
-function setBlockFormOnceAndHash(block)
+function setBlockFormOnceAndHashes(block)
 {
     var $blockForm = getBlockForm(block);
     // Set previous block's hash
@@ -252,7 +259,17 @@ function setBlockFormAsSigned(block)
 
 function setBlockFormAsTempered(block)
 {
-    $('#block-' + block.id + ' .well').removeClass('signed').addClass('tempered');
+    // $('#block-' + block.id + ' .well').removeClass('signed').addClass('tempered');
+    // TODO If I had access to the chain here, that would be nicer
+    $('form').each(function(index, form)
+    {
+        var $form = $(form);
+        //console.log(arguments);
+        if ($form.data().blockId >= block.id)
+        {
+            $form.find('.well').removeClass('signed').addClass('tempered');
+        }
+    });
 }
 
 
