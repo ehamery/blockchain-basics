@@ -23,6 +23,21 @@ function BlockForm(block)
     // $nonceGroup.find('input').prop('disabled', true);
     // $hashGroup.find('input').prop('disabled', true);
 
+
+    // for testing
+    // $form.on('click', function(event, parameters, param2)
+    // {
+    //     console.log('click event on block #' + block.id);
+    //     console.log(arguments);
+    // });
+
+    $form.on('updateBlockFormStatus-' + block.id, function(event, param1)
+    {
+        console.log('updateBlockFormStatus-' + block.id);
+        setBlockFormStatus(block);
+//        triggerUpdateNextBlockForm(block);
+    });
+
     $contentGroup.find('textarea').on('input', function(event)
     {
         console.log($(this).val());
@@ -136,7 +151,8 @@ function TextArea(id, text, rows)
         id: id,
         rows: rows
     });
-    $input.text(text);
+    // $input.text(text); // http://api.jquery.com/text/#text1
+    $input.val(text);
     $div.append($input);
     return $div;
 }
@@ -186,12 +202,15 @@ function MineButton(block)
 
                 // $this.button('signed');
                 // updateBlockForm(block);
-                setBlockFormOnceAndHashes(block)
+                setBlockFormOnceAndHashes(block);
                 setBlockFormAsSigned(block);
+                // triggerUpdateNextBlockForm(block);// TEST
+                // setBlockFormStatus(block);
                 $this.button('reset');
                 disable(block, false);
 
-            }, 1000); // 1 seconds to have the time the realised it is mining
+            // }, 1000); // 1 seconds to have the time the realised it is mining
+            }, 0);
 
             //$( "p" ).trigger( "myCustomEvent", [ "John" ] );
             // return false;
@@ -246,21 +265,44 @@ function setBlockFormOnceAndHashes(block)
     $blockForm.find('#hash-' + block.id).val(block.hash);
 }
 
+
+function setBlockFormAsNew(block)
+{
+    var $blockForm = getBlockForm(block);
+    $blockForm.find('.well').removeClass('tempered').removeClass('signed');
+}
+
 function setBlockFormAsSigned(block)
 {
     var $blockForm = getBlockForm(block);
     // Set signed color (green)
     $blockForm.find('.well').removeClass('tempered').addClass('signed');
-    // // Set nonce
-    // $blockForm.find('#nonce-' + block.id).val(block.nonce);
-    // // Set hash
-    // $blockForm.find('#hash-' + block.id).val(block.hash);
+
+//   triggerUpdateNextBlockForm(block);
+}
+
+function triggerUpdateNextBlockForm(block)
+{
+    var nextBlock = block.getNextBlock();
+    if (!block.isLastBlock())
+    {
+        var nextBlockId =  block.id + 1;
+        var event = $.Event('updateBlockFormStatus-' + nextBlockId/*, {blockId: nextBlockId}*/ );
+        // $("form .well").trigger(event);
+        var $nextForm = $('#block-' + nextBlockId);
+        $('#block-' + nextBlockId).trigger(event);
+        // $('#block-' + nextBlockId).trigger('click', 'params');
+    }
+    else
+    {
+        console.log('Last block was reach');
+    }
 }
 
 function setBlockFormAsTempered(block)
 {
     // $('#block-' + block.id + ' .well').removeClass('signed').addClass('tempered');
-    // TODO If I had access to the chain here, that would be nicer
+    // TODO use block.chain!
     $('form').each(function(index, form)
     {
         var $form = $(form);
@@ -275,14 +317,20 @@ function setBlockFormAsTempered(block)
 
 function setBlockFormStatus(block)
 {
-    if (block.isSigned())
+    if (block.isSignedAndValid())
     {
         setBlockFormAsSigned(block);
+    }
+    else if (!block.isSigned())
+    {
+        setBlockFormAsNew(block);
     }
     else
     {
         setBlockFormAsTempered(block);
     }
+
+    // triggerUpdateNextBlockForm(block);
 }
 
 /*

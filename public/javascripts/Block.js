@@ -24,10 +24,12 @@ function Blockchain()
     // '0000000000000000000000000000000000000000000000000000000000000000';
     console.log("firstBlockPreviousHash: " + this.firstBlockPreviousHash);
 
+    // TODO consider putting it in this.blocks
     this.blockZero =
     {
         id: 0,
         hash: this.firstBlockPreviousHash,
+        isSignedAndValid: function() {return true;},
         isSigned: function() {return true;}
     }; // TODO make a fake block with checks
 
@@ -73,7 +75,7 @@ Blockchain.prototype =
         for (var i = 0, length = this.blocks.length; i < length; ++i)
         {
             block = this.blocks[i];
-            if (block.isSigned())
+            if (block.isSignedAndValid())
             {
                 continue;
             }
@@ -89,13 +91,13 @@ Blockchain.prototype =
 
 function Block(/*previousBlock, */data)
 {
-    this.id = null;
+    this.id = null; // WARNING: start at 1
     this.previousBlock = null;
     //this.previousHash = null;
     this.timestamp = Date.now();
     this.content = data || '';
     this.nonce = null; //0;
-    this.hash = null;
+    this.hash = null; // signature
     this.chain = null;
 }
 
@@ -139,7 +141,7 @@ Block.prototype =
             throw new Error("Block need to be attached to a blockchain first");
         }
 
-        if (!this.previousBlock.isSigned())
+        if (!this.previousBlock.isSignedAndValid())
         {
             throw new Error("Previous block is not signed, mining it is required");
         }
@@ -168,6 +170,19 @@ Block.prototype =
     {
         // return this.previousBlock.hash + String(this.id) + String(this.timestamp) + this.content;
         return this.previousBlock.hash + String(this.id) + this.content;
+    },
+    getNextBlock: function()
+    {
+        // if (this.id < this.chain.blocks.length)
+        if (!this.isLastBlock())
+        {
+            return this.chain.blocks[this.id]; // because block.id starts at 1
+        }
+        return null;
+    },
+    isLastBlock: function()
+    {
+        return !(this.id < this.chain.blocks.length);
     },
     /*
     getPreviousBlockHash: function()
@@ -208,11 +223,14 @@ Block.prototype =
     },
     isSigned: function()
     {
+        return (this.hash !== null)
+    },
+    isSignedAndValid: function()
+    {
         var work = this.chain.work(this.getWorkInput1(), this.nonce);
-        // console.log('work: ' + work);
-        // console.log('hash: ' + this.hash);
         return (work === this.hash && this.chain.isWorkValid(work));
-    }/*,
+    }
+    /*,
     get content()
     {
         return this.content;
