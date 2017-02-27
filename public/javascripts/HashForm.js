@@ -8,7 +8,7 @@ function HashForm(text)
     var $form = $('<form/>', {class: 'form-horizontal'});
     var $fieldset = $('<fieldset/>', {class: 'well'});
 
-    var $contentGroup = new TextAreaGroup('hashInput', 'Input', text);
+    var $contentGroup = new TextAreaGroup('hashInput', 'input', text);
     var $textArea = $contentGroup.find('textarea');
     $textArea.attr('placeholder', 'Enter some text and look at the hash it produces');
     $textArea.on('input', function(event)
@@ -18,7 +18,7 @@ function HashForm(text)
         $hash.val(hash(input));
     });
 
-    var $hashGroup = new InputGroup('text', 'hashOuput', 'Hash');
+    var $hashGroup = new InputGroup('text', 'hashOuput', 'hash(input)');
     var $hash = $hashGroup.find('input');
     $hash.prop('disabled', true).val(hash(text));
 

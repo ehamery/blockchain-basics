@@ -11,7 +11,7 @@ router.get('/:page', function(req, res, next)
 {
     console.log(req.params);
     var page = req.params.page;
-    res.render(page, {page: page, title: 'Hash Demo'});
+    res.render(page, {page: page/*, title: 'Hash Demo'*/});
 });
 
 module.exports = router;

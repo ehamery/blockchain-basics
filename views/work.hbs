@@ -1,0 +1,25 @@
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<!--<script src="javascripts/bootstrap.min.js"></script>-->
+<script src="javascripts/bootstrap.js"></script>
+<script src="javascripts/sha256.js"></script>
+<script src="javascripts/helper.js"></script>
+<script src="javascripts/Block.js"></script>
+<script src="javascripts/BlockForm.js"></script>
+<script src="javascripts/WorkForm.js"></script>
+<script src="javascripts/work.js"></script>
+
+<div class="container">
+    <h1>Proof of work</h1>
+    <h4>We are trying to find a number (called nonce) for which, when added to the input, the resulting hash contained a certain number of leading zeros.</h4>
+    <h4>For instance, for a difficulty of 4, the result of hash(input + nonce) must start with "0000".</h4>
+    <h4>I called this number of zeros the difficulty because the bigger it is, the longer it tasks to find a matching hash.</h4>
+    <h4>You can start incrementing the nonce manually with a difficulty of 1, and then increment the difficulty when you find a match.</h4>
+    <h4>When you get tired, just press the "Find a match" button.</h4>
+    <h4>WARNING: you may have to kill your brother if you try a number bigger than 4.</h4>
+    <div id="work">
+
+    </div>
+</div>

@@ -182,7 +182,7 @@ function MineButton(block)
             console.log("Triggering mining");
             // $(this).button('toogle');
             // $(this).button('reset');
-            $(this).button('mining');
+            $(this).button('mining'); // asynchronous
 
             var $this = $(this);
             setTimeout(function() // required to allow button('mining') to execute first
@@ -210,7 +210,7 @@ function MineButton(block)
                 disable(block, false);
 
             // }, 1000); // 1 seconds to have the time the realised it is mining
-            }, 0);
+            }, 100);
 
             //$( "p" ).trigger( "myCustomEvent", [ "John" ] );
             // return false;
