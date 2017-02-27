@@ -88,6 +88,7 @@ function WorkButton()
 
             // $(this).trigger('work');
             var $this = $(this);
+            /*
             setTimeout(function() // required to allow button('working') to execute first
             {
                 try
@@ -104,6 +105,20 @@ function WorkButton()
                 $this.button('reset');
                 $('form').find('fieldset').prop('disabled', false);
             }, 100);
+            */
+            findMatchAsync(function(error, hash)
+            {
+                if (error)
+                {
+                    alert(error);
+                    $this.button('reset');
+                    $('form').find('fieldset').prop('disabled', false);
+                    return;
+                }
+                $this.button('reset');
+                $('form').find('fieldset').prop('disabled', false);
+                console.log('[callback] Match found: ' + $('#nonce').val() + '=> ' + $('#hashOutput').val());
+            });
         },
         'data-working-text': 'Working...',
         'autocomplete': "off",
@@ -123,7 +138,7 @@ function WorkButton()
     return $inputGroup;
 }
 
-
+// Does not allow display update...
 function findMatch()
 {
     var hashInput = $('#hashInput').val();
@@ -134,8 +149,8 @@ function findMatch()
     var hashOutput = null;
     for (; nonce < Block.MAX_MINING_ATTEMPT; ++nonce)
     {
-        hashOutput = work(hashInput, nonce);
-        updateFormSometimes(nonce, hashOutput);
+        hashOutput = work(nonce, hashInput);
+        updateFormSometimes(nonce, hashOutput); // Useless...
 
         if ((hashOutput.substr(0, proofOfWorkCondition.length) === proofOfWorkCondition))
         {
@@ -148,6 +163,53 @@ function findMatch()
     }
 
     throw new Error( "Could not find a match in  " + Block.MAX_MINING_ATTEMPT + " attempts");
+}
+
+function findMatchAsync(callback)
+{
+    var hashInput = $('#hashInput').val();
+    var proofOfWorkCondition = getProofOfWorkCondition();
+    var $nonce = $('#nonce');
+    var nonce = $nonce.val();
+    var $hashOutput = $('#hashOutput');
+    var hashOutput = null;
+
+    (function findAMatch(nonce)
+    {
+        // console.log("nonce: " + nonce);
+        if (nonce >= Block.MAX_MINING_ATTEMPT)
+        {
+            callback(new Error( "Could not find a match in  " + Block.MAX_MINING_ATTEMPT + " attempts"))
+            return;
+        }
+
+        setTimeout(function ()
+        {
+            var random = Math.floor((Math.random() * 100) + 1); // [1, 100]
+            var limit = Math.min(Block.MAX_MINING_ATTEMPT, nonce + random);
+
+            for (; nonce < limit; ++nonce)
+            {
+                hashOutput = work(nonce, hashInput);
+                // updateFormSometimes(nonce, hashOutput);
+
+                if ((hashOutput.substr(0, proofOfWorkCondition.length) === proofOfWorkCondition))
+                {
+                    console.log('Match found: ' + nonce + '=> ' + hashOutput);
+                    $nonce.val(nonce);
+                    $hashOutput.val(hashOutput);
+                    setWorkDone(true);
+                    callback(null, hashOutput);
+                    return;
+                }
+            }
+
+            $nonce.val(nonce);
+            $hashOutput.val(hashOutput);
+            // findAMatch(++nonce);
+            findAMatch(nonce);
+        }, 0);
+    })(nonce);
 }
 
 function getProofOfWorkCondition()
@@ -164,7 +226,7 @@ function getProofOfWorkCondition()
 function updateFormSometimes(nonce, hashOutput)
 {
     // update randomly, updating everytime is too heavy
-    if (Math.floor((Math.random() * 100) + 1)  === 100)
+    if (Math.floor((Math.random() * 100) + 1)  === 100) // [1, 100]
     {
         console.log('updateFormSometimes ' + nonce + '=> '+ hashOutput);
         $('#nonce').val(nonce);
