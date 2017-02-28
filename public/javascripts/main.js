@@ -1,6 +1,4 @@
 /**
- * Created by eric on 2017/02/18.
- *
  * External dependencies:
  * - Block.js
  * - BlockForm.js

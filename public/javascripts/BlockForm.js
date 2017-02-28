@@ -1,5 +1,5 @@
 /**
- * Created by eric on 2017/02/22.
+ *
  */
 
 function BlockForm(block)
@@ -19,10 +19,6 @@ function BlockForm(block)
     var $mineButton = new MineButton(block);
 
     $blockNbGroup.find('input').prop('disabled', true);
-    // $previousHashGroup.find('input').prop('disabled', true);
-    // $nonceGroup.find('input').prop('disabled', true);
-    // $hashGroup.find('input').prop('disabled', true);
-
 
     // for testing
     // $form.on('click', function(event, parameters, param2)

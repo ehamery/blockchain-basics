@@ -1,5 +1,5 @@
 /**
- * Created by eric on 2017/02/26.
+ *
  */
 
 function HashForm(text)

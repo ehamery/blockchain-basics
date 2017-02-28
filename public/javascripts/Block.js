@@ -1,11 +1,8 @@
 /**
- * Created by eric on 2017/02/18.
- *
- * https://en.bitcoin.it/wiki/Protocol_documentation
- *
  * External dependencies:
  * - CryptoJS.SHA256
  *
+ * https://en.bitcoin.it/wiki/Protocol_documentation
  */
 
 function Blockchain()
@@ -101,28 +98,7 @@ function Block(/*previousBlock, */data)
     this.chain = null;
 }
 
-// Block 'static' members
-/*
-Block.LATEST_ID = 0;
-Block.PROOF_OF_WORK_CONDITION = "0000"; // Could just use the length
-
-Block.FIRST_BLOCK_PREVIOUS_HASH = "";
-(function setFIRST_BLOCK_PREVIOUS_HASH()
-{
-    for (var i = 0, HASH_SIZE = 64; i < HASH_SIZE; ++i)
-    {
-        Block.FIRST_BLOCK_PREVIOUS_HASH += "0";
-    }
-})();
-console.log("Block.FIRST_BLOCK_PREVIOUS_HASH: " + Block.FIRST_BLOCK_PREVIOUS_HASH);
-*/
 Block.MAX_MINING_ATTEMPT = 1000000;
-/*
-Block.work = function(data, nonce)
-{
-    return CryptoJS.SHA256(data + nonce).toLocaleString();
-};
-*/
 
 Block.prototype =
 {
@@ -153,11 +129,9 @@ Block.prototype =
         // for (; this.nonce < Block.MAX_MINING_ATTEMPT; ++this.nonce)
         {
             work = this.chain.work(workInput1, this.nonce);
-            // TODO send event to the UI
             if (this.chain.isWorkValid(work))
             {
                 this.hash = work;
-                // TODO send event to the UI
                 console.log("Block: " + this.id + " solved: " + this.nonce + " -> " + this.hash);
                 return this.hash;
             }
@@ -173,7 +147,6 @@ Block.prototype =
     },
     getNextBlock: function()
     {
-        // if (this.id < this.chain.blocks.length)
         if (!this.isLastBlock())
         {
             return this.chain.blocks[this.id]; // because block.id starts at 1
@@ -230,46 +203,5 @@ Block.prototype =
         var work = this.chain.work(this.getWorkInput1(), this.nonce);
         return (work === this.hash && this.chain.isWorkValid(work));
     }
-    /*,
-    get content()
-    {
-        return this.content;
-    },
-    get hash()
-    {
-        return this.hash;
-    },
-    set content(data)
-    {
-        this.content = data;
-    }
-    */
 };
 
-
-function BlockElement(block)
-{
-    this.element = $('<form/>',
-    {
-        // id: 'f',
-        // href: 'http:/',
-        // title: '',
-        // rel: 'external',
-        // text: '!'
-    });//.appendTo('#mySelector');
-}
-
-BlockElement.prototype =
-{
-    constructoc: BlockElement,
-    append: function(element)
-    {
-        this.element.appendTo(element);
-    }
-};
-
-
-/*
-Use default parameters
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters
-*/

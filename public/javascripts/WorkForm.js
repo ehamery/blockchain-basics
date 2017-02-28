@@ -1,5 +1,4 @@
 /**
- * Created by eric on 2017/02/27.
  * TODO: Add a stop button!
  */
 
