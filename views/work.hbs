@@ -12,14 +12,27 @@
 <script src="javascripts/work.js"></script>
 
 <div class="container">
-    <h1>Proof of work</h1>
-    <h4>We are trying to find a number (called nonce) for which, when append to the input, produces a hash containaing a certain number of leading zeros.</h4>
+    <h1>Proof Of Work</h1>
+    <h4>The "work" consists of finding a number (called nonce) for which, when append to the input, produces a hash containing a certain number of leading zeros.</h4>
     <h4>For instance, if we set the number of leadind zeros to 4, the result of hash(input + nonce) must start with "0000".</h4>
-    <h4>The bigger the number of leading zeros is, the less likely the hash is going to match and therefore the longer it tasks to find a matching hash.</h4>
-    <h4>You can start incrementing the nonce manually with a difficulty of 1, and then increment the difficulty when you find a match.</h4>
-    <h4>To do this click on the 'nonce' box and  press the up key ↑ of your keyboard</h4>
-    <h4>When you get tired, just press the "Find a match" button.</h4>
+    <h4>The bigger the number of leading zeros is, the less likely the hash is going to match and therefore the longer the "work" will take.</h4>
+    <h4>With the number of leading zeros set to 1, click on the 'nonce' box and  press the 'up' key ↑ of your keyboard to increment it. Notice that the hash gets updated each time. Keep incrementing the nonce until the hash has 1 leading zero. Here you are actually doing the "work".</h4>
+    <h4>Then set the nonce back to 0 and try with higher number of zero.</h4>
+    <h4>When you get tired of it, just press the "Find a match" button.</h4>
+    <h4>Finding a match when talking about Bitcoin is called "Mining"</h4>
     <div id="work">
 
+    </div>
+    <div class="row">
+        <div class="col-sm-2">
+            <a href="./hash">
+                <button type="button" id="previous-button" class="btn btn-primary form-control">Previous</button>
+            </a>
+        </div>
+        <div class="col-sm-2 col-md-offset-8">
+            <a href="./blockchain">
+                <button type="button" id="next-button" class="btn btn-primary form-control">Next</button>
+            </a>
+        </div>
     </div>
 </div>

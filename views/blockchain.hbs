@@ -12,15 +12,30 @@
 <script src="javascripts/main.js"></script>
 
 <div class="container">
-<!--<div id="main" class="container-fluid">-->
-    <h1>{{title}}</h1>
+<div class="container-fluid">
+    <h1>Blockchain</h1>
+    <h4>Previously we use text+nonce as input to the hash function, that is hash(text+nonce).</h4>
+    <h4>Let's call the combination of text, nonce and hash a block.</h4>
+    <h4>When a hash is found matching the number of leading zeros wanted, it is said to be signed</b>.</h4>
+    <h4>To create a chain of these blocks, an extra element is added, the hash of the previous block, and used as the current block hash input in addition to the text and nonce.</h4>
+    <h4>hash = hash(previous hash + text + nonce)</h4>
+    <h4>Therefore if any block in the chain is modified, then all the subsequent blocks in the chain will be modified too and they all need to be re-signed.</h4>
     <div id="blockchain">
 
     </div>
-    <!--<div class="form-group">-->
+    <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
             <button type="button" id="add-block-button" class="btn btn-primary form-control">Add Block</button>
         </div>
-    <!--</div>-->
-
+    </div>
+    <!-- Commented out because ugly -->
+    <!--
+    <div class="row">
+        <div class="col-sm-2">
+            <a href="./work">
+                <button type="button" id="previous" class="btn btn-primary form-control">Previous</button>
+            </a>
+        </div>
+    </div>
+    -->
 </div>

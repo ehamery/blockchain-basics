@@ -13,7 +13,7 @@ function BlockForm(block)
     var $blockNbGroup = new InputGroup('number', block.id, 'ID', block.id);
     // var $timestampGroup = new InputGroup('number', 'timestamp-' + block.id, 'Timestamp', block.timestamp);//TODO Type
     var $contentGroup = new TextAreaGroup('content-'+ block.id, 'Content', block.content);
-    var $previousHashGroup = new InputGroup('text', 'previous-block-hash-' + block.id, 'Previous Blcok', block.previousBlock.hash);
+    var $previousHashGroup = new InputGroup('text', 'previous-block-hash-' + block.id, 'Previous Block', block.previousBlock.hash);
     var $nonceGroup = new InputGroup('number', 'nonce-' + block.id, 'Nonce', block.nonce);
     var $hashGroup = new InputGroup('text', 'hash-' + block.id, 'Hash', block.hash);
     var $mineButton = new MineButton(block);

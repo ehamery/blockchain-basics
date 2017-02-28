@@ -23,12 +23,14 @@ function WorkForm(text)
     });
 
     var $nonceGroup = new InputGroup('number', 'nonce', 'nonce', nonce);
-    $nonceGroup.find('input').on('input', function(event)
+    var $nonceInput = $nonceGroup.find('input');
+    $nonceInput.attr('min', 0);
+    $nonceInput.on('input', function(event)
     {
         update();
     });
 
-    var $difficultyGroup = new InputGroup('number', 'difficulty', 'Leading zeros', DEFAULT_LEADING_ZEROS);
+    var $difficultyGroup = new InputGroup('number', 'difficulty', 'leading zeros', DEFAULT_LEADING_ZEROS);
     var $difficultyInput = $difficultyGroup.find('input');
     $difficultyInput.attr('min', MIN_LEADING_ZEROS).attr('max', MAX_LEADING_ZEROS);
     $difficultyInput.on('input', function(event)
@@ -90,24 +92,6 @@ function WorkButton()
             $(this).button('working');// asynchronous
 
             var $this = $(this);
-            /*
-            setTimeout(function() // required to allow button('working') to execute first
-            {
-                try
-                {
-                    findMatch();
-                }
-                catch(error)
-                {
-                    alert(error); // TODO display something nicer
-                    $this.button('reset');
-                    $('form').find('fieldset').prop('disabled', false);
-                    throw(error);
-                }
-                $this.button('reset');
-                $('form').find('fieldset').prop('disabled', false);
-            }, 100);
-            */
             findMatchAsync(function(error, hash)
             {
                 if (error)
@@ -138,33 +122,6 @@ function WorkButton()
     $div.append($button);
     $inputGroup.append($div);
     return $inputGroup;
-}
-
-// Does not allow display update...
-function findMatch()
-{
-    var hashInput = $('#hashInput').val();
-    var proofOfWorkCondition = getProofOfWorkCondition();
-    var $nonce = $('#nonce');
-    var nonce = $nonce.val();
-
-    var hashOutput = null;
-    for (; nonce < Block.MAX_MINING_ATTEMPT; ++nonce)
-    {
-        hashOutput = work(nonce, hashInput);
-        updateFormSometimes(nonce, hashOutput); // Useless...
-
-        if ((hashOutput.substr(0, proofOfWorkCondition.length) === proofOfWorkCondition))
-        {
-            console.log('Match found: ' + nonce + '=> ' + hashOutput);
-            $nonce.val(nonce);
-            $('#hashOutput').val(hashOutput);
-            setWorkDone(true);
-            return hashOutput;
-        }
-    }
-
-    throw new Error( "Could not find a match in  " + Block.MAX_MINING_ATTEMPT + " attempts");
 }
 
 function findMatchAsync(callback)
@@ -246,4 +203,34 @@ function setWorkDone(trueOrFalse)
     {
         $('fieldset').removeClass('signed');
     }
+}
+
+/*
+ * @deprecated
+ * Does not allow display update...
+ */
+function findMatch()
+{
+    var hashInput = $('#hashInput').val();
+    var proofOfWorkCondition = getProofOfWorkCondition();
+    var $nonce = $('#nonce');
+    var nonce = $nonce.val();
+
+    var hashOutput = null;
+    for (; nonce < Block.MAX_MINING_ATTEMPT; ++nonce)
+    {
+        hashOutput = work(nonce, hashInput);
+        updateFormSometimes(nonce, hashOutput); // Useless...
+
+        if ((hashOutput.substr(0, proofOfWorkCondition.length) === proofOfWorkCondition))
+        {
+            console.log('Match found: ' + nonce + '=> ' + hashOutput);
+            $nonce.val(nonce);
+            $('#hashOutput').val(hashOutput);
+            setWorkDone(true);
+            return hashOutput;
+        }
+    }
+
+    throw new Error( "Could not find a match in  " + Block.MAX_MINING_ATTEMPT + " attempts");
 }
