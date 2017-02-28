@@ -3,6 +3,10 @@
  * TODO: Add a stop button!
  */
 
+var MIN_LEADING_ZEROS = 1;
+var MAX_LEADING_ZEROS = 7; // Above 7, it will likely take too much time
+var DEFAULT_LEADING_ZEROS = MIN_LEADING_ZEROS;
+
 function WorkForm(text)
 {
     text = text || '';
@@ -24,9 +28,9 @@ function WorkForm(text)
         update();
     });
 
-    var $difficultyGroup = new InputGroup('number', 'difficulty', 'Difficulty', 4);
+    var $difficultyGroup = new InputGroup('number', 'difficulty', 'Leading zeros', DEFAULT_LEADING_ZEROS);
     var $difficultyInput = $difficultyGroup.find('input');
-    $difficultyInput.attr('min', 1).attr('max', 7);
+    $difficultyInput.attr('min', MIN_LEADING_ZEROS).attr('max', MAX_LEADING_ZEROS);
     $difficultyInput.on('input', function(event)
     {
         update();
@@ -83,10 +87,8 @@ function WorkButton()
         {
             // Locking form until work is over
             $('form').find('fieldset').prop('disabled', true);
-            // event.preventDefault();
             $(this).button('working');// asynchronous
 
-            // $(this).trigger('work');
             var $this = $(this);
             /*
             setTimeout(function() // required to allow button('working') to execute first
@@ -176,7 +178,7 @@ function findMatchAsync(callback)
 
     (function findAMatch(nonce)
     {
-        // console.log("nonce: " + nonce);
+        // console.log("nonce: " + nonce); // Heavy on the browser
         if (nonce >= Block.MAX_MINING_ATTEMPT)
         {
             callback(new Error( "Could not find a match in  " + Block.MAX_MINING_ATTEMPT + " attempts"))
@@ -225,7 +227,7 @@ function getProofOfWorkCondition()
 
 function updateFormSometimes(nonce, hashOutput)
 {
-    // update randomly, updating everytime is too heavy
+    // Update randomly, updating everytime is too heavy
     if (Math.floor((Math.random() * 100) + 1)  === 100) // [1, 100]
     {
         console.log('updateFormSometimes ' + nonce + '=> '+ hashOutput);
