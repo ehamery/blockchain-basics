@@ -1,6 +1,13 @@
 # Blockchain Basics
 
-## Intall and start the server
+## Intall
+
+- [Node.js] (https://nodejs.org/en/download/)
+- [npm] (https://docs.npmjs.com/getting-started/installing-node)
+ 
+## Run
+
+From the project root folder run:
 
 ```sh
 npm install

@@ -20,13 +20,6 @@ function BlockForm(block)
 
     $blockNbGroup.find('input').prop('disabled', true);
 
-    // for testing
-    // $form.on('click', function(event, parameters, param2)
-    // {
-    //     console.log('click event on block #' + block.id);
-    //     console.log(arguments);
-    // });
-
     $form.on('updateBlockFormStatus-' + block.id, function(event, param1)
     {
         console.log('updateBlockFormStatus-' + block.id);
@@ -41,7 +34,10 @@ function BlockForm(block)
         setBlockFormStatus(block);
     });
 
-    $previousHashGroup.find('input').on('input', function(event)
+    var $previousHashInput = $previousHashGroup.find('input');
+    $previousHashInput.prop('disabled', true);
+    /*
+    $previousHashInput.on('input', function(event)
     {
         console.log($(this).val());
         //block.setPreviousBlockHash($(this).val());
@@ -54,20 +50,29 @@ function BlockForm(block)
             setBlockFormStatus(block);
         }
     });
+    */
 
-    $nonceGroup.find('input').on('input', function(event)
+    var $nonceInput = $nonceGroup.find('input');
+    $nonceInput.prop('disabled', true);
+    /*
+    $nonceInput.on('input', function(event)
     {
         console.log($(this).val());
         block.setNonce($(this).val());
         setBlockFormStatus(block);
     });
+    */
 
-    $hashGroup.find('input').on('input', function(event)
+    var $hashInput = $hashGroup.find('input');
+    $hashInput.prop('disabled', true);
+    /*
+    $hashInput.on('input', function(event)
     {
         console.log($(this).val());
         block.setHash($(this).val());
         setBlockFormStatus(block);
     });
+    */
 
     $fieldset.append($previousHashGroup);
     $fieldset.append($blockNbGroup);
@@ -172,18 +177,12 @@ function MineButton(block)
         {
             // Locking form until mining is over
             disable(block);
-
-            // console.log(event);
-            // event.preventDefault();
             console.log("Triggering mining");
-            // $(this).button('toogle');
-            // $(this).button('reset');
             $(this).button('mining'); // asynchronous
 
             var $this = $(this);
             setTimeout(function() // required to allow button('mining') to execute first
             {
-                // $this.button('test');
                 try
                 {
                     block.mine();
@@ -196,27 +195,19 @@ function MineButton(block)
                     throw(error);
                 }
 
-                // $this.button('signed');
-                // updateBlockForm(block);
                 setBlockFormOnceAndHashes(block);
                 setBlockFormAsSigned(block);
                 // triggerUpdateNextBlockForm(block);// TEST
                 // setBlockFormStatus(block);
                 $this.button('reset');
                 disable(block, false);
+            }, 100); // To leave the time to see the "Mining" change on the button
 
-            // }, 1000); // 1 seconds to have the time the realised it is mining
-            }, 100);
-
-            //$( "p" ).trigger( "myCustomEvent", [ "John" ] );
             // return false;
         },
         // class: 'btn btn-primary active',
         'data-signed-text': 'Signed',
         'data-mining-text': 'Mining...',
-        // 'data-reset-text': 'Resetting...',
-        'data-test-text': 'testing...',
-
         // 'data-toggle': 'button',
         'autocomplete': "off",
         id: 'mine-button-' + block.id,
@@ -234,8 +225,6 @@ function MineButton(block)
     $inputGroup.append($div);
     return $inputGroup;
 }
-
-
 
 
 function getBlockForm(block)
@@ -260,7 +249,6 @@ function setBlockFormOnceAndHashes(block)
     // Set hash
     $blockForm.find('#hash-' + block.id).val(block.hash);
 }
-
 
 function setBlockFormAsNew(block)
 {
