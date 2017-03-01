@@ -53,15 +53,13 @@ function BlockForm(block)
     */
 
     var $nonceInput = $nonceGroup.find('input');
-    $nonceInput.prop('disabled', true);
-    /*
+    // $nonceInput.prop('disabled', true);
     $nonceInput.on('input', function(event)
     {
         console.log($(this).val());
         block.setNonce($(this).val());
         setBlockFormStatus(block);
     });
-    */
 
     var $hashInput = $hashGroup.find('input');
     $hashInput.prop('disabled', true);
